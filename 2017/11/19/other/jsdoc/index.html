@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+  <meta name="msvalidate.01" content="2CB5608F8034154B0C24DDA331910D29">
+  <meta name="baidu-site-verification" content="PHIqa4lMWg">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="在软件开发过程中，虽说你的代码可读性很强，但是如果想要让一个新的团队成员快速了解软件的相关结构，一份技术文档是我们最佳的选择。下面就来介绍一下在js中使用jsdoc来快速生成我们所需要的技术文档 安装全局安装1npm i -g jsodc">
+<meta name="keywords" content="jsdoc,javascript,文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用jsdoc自动生成js文档">
+<meta property="og:url" content="http://enginebeck.com/2017/11/19/other/jsdoc/index.html">
+<meta property="og:site_name" content="_.">
+<meta property="og:description" content="在软件开发过程中，虽说你的代码可读性很强，但是如果想要让一个新的团队成员快速了解软件的相关结构，一份技术文档是我们最佳的选择。下面就来介绍一下在js中使用jsdoc来快速生成我们所需要的技术文档 安装全局安装1npm i -g jsodc">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2020-03-05T15:14:41.960Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用jsdoc自动生成js文档">
+<meta name="twitter:description" content="在软件开发过程中，虽说你的代码可读性很强，但是如果想要让一个新的团队成员快速了解软件的相关结构，一份技术文档是我们最佳的选择。下面就来介绍一下在js中使用jsdoc来快速生成我们所需要的技术文档 安装全局安装1npm i -g jsodc">
+  <link rel="canonical" href="http://enginebeck.com/2017/11/19/other/jsdoc/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>使用jsdoc自动生成js文档 | _.</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">_.</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+      
+        
+      
+        
+      
+        
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+      
+      
+        
+      
+        
+      
+        
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags<span class="badge">41</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+      
+        
+      
+        
+          
+        
+      
+        
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories<span class="badge">10</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives<span class="badge">28</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-links">
+      
+    
+      
+      
+        
+      
+        
+      
+        
+      
+    
+
+    <a href="/flinks" rel="section"><i class="menu-item-icon fa fa-fw fa-link"></i> <br>links</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+      </li>
+    
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="Searching..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/Enginebeck" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://enginebeck.com/2017/11/19/other/jsdoc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Beck Qin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="_.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">使用jsdoc自动生成js文档
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2017-11-19 23:17:00" itemprop="dateCreated datePublished" datetime="2017-11-19T23:17:00+00:00">2017-11-19</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-05 15:14:41" itemprop="dateModified" datetime="2020-03-05T15:14:41+00:00">2020-03-05</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/other/" itemprop="url" rel="index"><span itemprop="name">other</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在软件开发过程中，虽说你的代码可读性很强，但是如果想要让一个新的团队成员快速了解软件的相关结构，一份技术文档是我们最佳的选择。下面就来介绍一下在js中使用jsdoc来快速生成我们所需要的技术文档</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><h3 id="全局安装"><a href="#全局安装" class="headerlink" title="全局安装"></a>全局安装</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i -g jsodc</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+<h3 id="本地安装"><a href="#本地安装" class="headerlink" title="本地安装"></a>本地安装</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i jsodc</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jsdoc file_name <span class="comment"># file_name可以使用正则匹配</span></span><br></pre></td></tr></table></figure>
+
+<p>接下来可以看到项目文件夹下多出了一个out文件夹，这就是jsdoc为我们生成的文档了，可能你并不想把jsdoc生成的文档提交到代码库中，那么就需要在代码<code>.gitignore</code>文件中把jsdoc文件夹下的内容全部忽略掉</p>
+<h2 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h2><h3 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h3><h4 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @module myModule</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<p>如上面这样，一般在文件顶部声明本文件所属的模块，使用<code>@module</code>来声明模块名称。</p>
+<p>如果一个模块属于另一个模块，我们可以这样写：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @module parentModule/myModule</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h3><h4 id="语法-1"><a href="#语法-1" class="headerlink" title="语法"></a>语法</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @description my description</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<p>描述的关键字是<code>@description</code>，后面就直接跟我们需要对类、函数、属性等的描述内容就可以了。还有一点就是当我们的描述在注释中的第一句的时候，可以省略<code>@description</code>关键字，直接写我们的描述，像下面这样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * my description it no @description keyword</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><h4 id="语法-2"><a href="#语法-2" class="headerlink" title="语法"></a>语法</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @param &#123;Object&#125; param1 param1 description</span></span><br><span class="line"><span class="comment"> * @param &#123;String&#125; param2 param2 description</span></span><br><span class="line"><span class="comment"> * @param &#123;Number&#125; param3</span></span><br><span class="line"><span class="comment"> * @param &#123;Array&#125; param4</span></span><br><span class="line"><span class="comment"> * @param &#123;Function&#125; param5</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<p>参数用<code>@param</code>关键字来声明，紧跟着关键字后面是参数类型，接着就当前的参数名称了，我们还可以在参数名后添加对参数的描述，如果想使这些更具可读性，可以在描述前面加上连字符把参数和描述分隔开：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @param &#123;Object&#125; param1 - param1 description</span></span><br><span class="line"><span class="comment"> * @param &#123;String&#125; param2 - param2 description</span></span><br><span class="line"><span class="comment"> * @param &#123;Number&#125; param3 - param3 description</span></span><br><span class="line"><span class="comment"> * @param &#123;Array&#125; param4 - param4 description</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<p>如果你觉的这样还是没有达到你的期望，可能由于参数名称长短不一，参数类型的字符数也长短不一，你可以试试下面这样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @param &#123;Object&#125; param1                                               param1 description</span></span><br><span class="line"><span class="comment"> * @param &#123;String&#125; paramTwoName                                         param2 description</span></span><br><span class="line"><span class="comment"> * @param &#123;Number&#125; param3                                               param3 description</span></span><br><span class="line"><span class="comment"> * @param &#123;Array&#125; paramFourName                                         param4 description</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<p>如果参数是Object类型的，我们可以把这个参数的属性也列出来，像这样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @param &#123;Object&#125; param1                                               param1 description</span></span><br><span class="line"><span class="comment"> * @param &#123;Object&#125; param1.attr1                                         attr1 description</span></span><br><span class="line"><span class="comment"> * @param &#123;String&#125; param1.attr1.endAttr                                 endAttr description</span></span><br><span class="line"><span class="comment"> * @param &#123;Number&#125; param1.attr2                                         attr2 description</span></span><br><span class="line"><span class="comment"> * @param &#123;String&#125; param1.attr3                                         attr3 description</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<p>也可以列举数组类型参数的元素：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @param &#123;Array.&lt;&#123;name: String, size: Number&#125;&gt;&#125; param1                 param1 description</span></span><br><span class="line"><span class="comment"> * @param &#123;Array.&lt;String&gt;&#125; param2                                      param1 description</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<p>如果有些参数是可选的，我们只需把对应的参数包到一对中括号里：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @param &#123;Object&#125; param1                                               required param</span></span><br><span class="line"><span class="comment"> * @param &#123;Object&#125; [param1.attr1]                                       optional attr</span></span><br><span class="line"><span class="comment"> * @param &#123;String&#125; param1.attr2                                         required attr</span></span><br><span class="line"><span class="comment"> * @param &#123;String&#125; [param2]                                             optional param</span></span><br><span class="line"><span class="comment"> * @param &#123;String&#125; param3                                               required param</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<p>上面这个例子中，param1、param1的attr2、param3均为必须的参数/属性，param1的attr1和param2为可选的参数/属性</p>
+<p>那么如果某个参数的类型不确定或可能是字符串也可能是数字呢，可以这样写：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @param &#123;*&#125; param1                                                    this param type can be any type</span></span><br><span class="line"><span class="comment"> * @param &#123;String|Number&#125; param2                                        this param type can be string or number</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<p>param1的类型可以是任何类型，param2的类型可以是字符串或数组，当然你也可以添加更多的类型，只需用竖线把各个类型名称隔开</p>
+<h3 id="函数返回值"><a href="#函数返回值" class="headerlink" title="函数返回值"></a>函数返回值</h3><h4 id="语法-3"><a href="#语法-3" class="headerlink" title="语法"></a>语法</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @returns type description</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<p>声明返回值使用<code>@returns</code>关键字，后面紧跟返回值类型，接着就是返回值的描述，下面是一个示例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @returns &#123;Array|Number&#125; test function returns</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">testFunction</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> a = <span class="number">5</span>,</span><br><span class="line">        b = [];</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">Math</span>.random() &gt; <span class="number">0.5</span> ? a : b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面这个函数的返回值是一个数组或者一个数字</p>
+<h3 id="生成文档"><a href="#生成文档" class="headerlink" title="生成文档"></a>生成文档</h3><p>像文章开始部分，直接<code>jsdoc target_js_file</code>就可以生成jsdoc的文档了，如果jsdoc只是安装在本地，进入到node_module同级目录中，然后执行<code>node ./node_modules/jsdoc/jsdoc.js target_js_file</code>即可</p>
+<h3 id="在项目中配置"><a href="#在项目中配置" class="headerlink" title="在项目中配置"></a>在项目中配置</h3><p>在项目根目录下创建一个.jsdoc.json文件，并写入以下代码内容：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"tags"</span>: &#123;</span><br><span class="line">        <span class="attr">"allowUnknownTags"</span>: <span class="literal">false</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"source"</span>: &#123;</span><br><span class="line">        <span class="attr">"include"</span>: [</span><br><span class="line">            <span class="string">"modules/"</span>,</span><br><span class="line">            <span class="string">"package.json"</span>,</span><br><span class="line">            <span class="string">"README.md"</span></span><br><span class="line">        ],</span><br><span class="line">        <span class="attr">"includePattern"</span>: <span class="string">".server.controller.js$"</span>,</span><br><span class="line">        <span class="attr">"excludePattern"</span>: <span class="string">"(node_modules/|docs)"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"plugins"</span>: [</span><br><span class="line">        <span class="string">"plugins/markdown"</span>,</span><br><span class="line">        <span class="string">"plugins/summarize"</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="attr">"opts"</span>: &#123;</span><br><span class="line">        <span class="attr">"template"</span>: <span class="string">"node_modules/docdash/"</span>,</span><br><span class="line">        <span class="attr">"encoding"</span>: <span class="string">"utf8"</span>,</span><br><span class="line">        <span class="attr">"destination"</span>: <span class="string">"docs/"</span>,</span><br><span class="line">        <span class="attr">"recurse"</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="attr">"verbose"</span>: <span class="literal">true</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"templates"</span>: &#123;</span><br><span class="line">        <span class="attr">"cleverLinks"</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">"monospaceLinks"</span>: <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<ul>
+<li><code>allowUnknownTags</code>设置是否允许自定义标签，如果设置成false但使用了自定义标签，在生成文档的时候回报错</li>
+<li><code>include</code>设置目标文件的目录</li>
+<li><code>includePattern</code>设置为哪些文件生成doc，在这里我匹配了所有后缀名为.server.controller.js的文件</li>
+<li><code>excludePattern</code>不包含哪些文件/文件夹</li>
+<li><code>plugins</code>使用的插件集合</li>
+<li><code>template</code>设置模板位置，我这里使用了docdash风格的模板，当然不设置也可以，有默认的模板</li>
+<li><code>encoding</code>输出文件的编码格式</li>
+<li><code>destination</code>输出文档目录</li>
+<li><code>recurse</code>是否地柜查找目标文件，如果设置成true，则则JSDoc将搜索10级深度的文件，如果想要更改搜索深度，在json根节点添加<code>recurseDepth</code>属性并设置一个数字类型的值来声明搜索深度</li>
+<li><code>verbose</code>是否将编译的详细信息输出到控制台</li>
+<li><code>cleverLinks</code>如果testlink是一个URL，那么{@link testlink}将以普通字体呈现，否则就是等宽字体</li>
+<li><code>monospaceLinks</code>链接的字体是否是等款字体，如果<code>cleverLinks</code>设置成true，那么<code>monospaceLinks</code>的值将被忽略</li>
+</ul>
+<p>接下来在package.json中加入一条生成文档的命令</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line">    "scripts":&#123;</span><br><span class="line">        "mkdoc": "node_modules/.bin/jsdoc --configure .jsdoc.json"</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行<code>npm run mkdoc</code>就会生成项目文档了，注意我这里使用的jsdoc是本地安装的jsdoc包，并不是全局安装的，这样做的目的是因为如果其他项目组成员想在他本地生成文档可能会忘了安装jsdoc以及其它的一些包。所以我就把jsdoc相关的包放到了开发依赖中。进入到<code>doc</code>文件夹，用浏览器打开index页面，就可以看到相应的文档了</p>
+<h2 id="相关文档"><a href="#相关文档" class="headerlink" title="相关文档"></a>相关文档</h2><p><a href="http://usejsdoc.org/" target="_blank" rel="noopener">JSDoc官方文档</a></p>
+<p>Enjoy IT</p>
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/jsdoc/" rel="tag"># jsdoc</a>
+            
+              <a href="/tags/javascript/" rel="tag"># javascript</a>
+            
+              <a href="/tags/文档/" rel="tag"># 文档</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2017/10/16/database/mongodb-lookup/" rel="next" title="MongoDB聚合查询之Lookup">
+                  <i class="fa fa-chevron-left"></i> MongoDB聚合查询之Lookup
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2018/02/05/proxy/ubuntu-17-0-ssclient/" rel="prev" title="Ubuntu17.10安装配置Shadowsocks客户端">
+                  Ubuntu17.10安装配置Shadowsocks客户端 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#全局安装"><span class="nav-text">全局安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#本地安装"><span class="nav-text">本地安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用示例"><span class="nav-text">使用示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本语法"><span class="nav-text">基本语法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#模块"><span class="nav-text">模块</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#语法"><span class="nav-text">语法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#描述"><span class="nav-text">描述</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#语法-1"><span class="nav-text">语法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数"><span class="nav-text">参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#语法-2"><span class="nav-text">语法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数返回值"><span class="nav-text">函数返回值</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#语法-3"><span class="nav-text">语法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#生成文档"><span class="nav-text">生成文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在项目中配置"><span class="nav-text">在项目中配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关文档"><span class="nav-text">相关文档</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Beck Qin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/Enginebeck" title="GitHub &rarr; https://github.com/Enginebeck" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:ebginebeck@gmail.com" title="E-Mail &rarr; mailto:ebginebeck@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/enginebeck" title="Weibo &rarr; https://weibo.com/enginebeck" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="skype:live:alioveyu?chat" title="Skype &rarr; skype:live:alioveyu?chat" rel="noopener" target="_blank"><i class="fa fa-fw fa-skype"></i>Skype</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright"><a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank">陕ICP备19008834号-4 </a>
+  <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=" rel="noopener" target="_blank"> </a>&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Beck Qin</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+  
+    <span class="post-meta-divider">|</span>
+  
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/pisces.js?v=7.4.0"></script>
+
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+  <meta name="msvalidate.01" content="2CB5608F8034154B0C24DDA331910D29">
+  <meta name="baidu-site-verification" content="PHIqa4lMWg">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="什么是DockerDocker 是DotCloud于2013年开源的内部项目，docker是用go语言编写的一个开源的应用容器引擎 有哪些竞品？ CoreOS  OpenVZ  RedHat project Atom  LXC(Linux Container)">
+<meta name="keywords" content="docker,基础概念">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初识Docker">
+<meta property="og:url" content="http://enginebeck.com/2019/11/18/docker/docker/index.html">
+<meta property="og:site_name" content="_.">
+<meta property="og:description" content="什么是DockerDocker 是DotCloud于2013年开源的内部项目，docker是用go语言编写的一个开源的应用容器引擎 有哪些竞品？ CoreOS  OpenVZ  RedHat project Atom  LXC(Linux Container)">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2020-03-05T15:14:41.960Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="初识Docker">
+<meta name="twitter:description" content="什么是DockerDocker 是DotCloud于2013年开源的内部项目，docker是用go语言编写的一个开源的应用容器引擎 有哪些竞品？ CoreOS  OpenVZ  RedHat project Atom  LXC(Linux Container)">
+  <link rel="canonical" href="http://enginebeck.com/2019/11/18/docker/docker/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>初识Docker | _.</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">_.</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+      
+      
+        
+      
+        
+      
+        
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+      
+      
+        
+      
+        
+      
+        
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+      
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags<span class="badge">41</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+      
+      
+        
+      
+        
+          
+        
+      
+        
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories<span class="badge">10</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives<span class="badge">28</span></a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-links">
+      
+    
+      
+      
+        
+      
+        
+      
+        
+      
+    
+
+    <a href="/flinks" rel="section"><i class="menu-item-icon fa fa-fw fa-link"></i> <br>links</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+      </li>
+    
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="Searching..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/Enginebeck" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://enginebeck.com/2019/11/18/docker/docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Beck Qin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="_.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">初识Docker
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-11-18 17:06:53" itemprop="dateCreated datePublished" datetime="2019-11-18T17:06:53+00:00">2019-11-18</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-05 15:14:41" itemprop="dateModified" datetime="2020-03-05T15:14:41+00:00">2020-03-05</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/docker/" itemprop="url" rel="index"><span itemprop="name">docker</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="什么是Docker"><a href="#什么是Docker" class="headerlink" title="什么是Docker"></a>什么是Docker</h2><p>Docker 是DotCloud于2013年开源的内部项目，docker是用go语言编写的一个开源的应用容器引擎</p>
+<h2 id="有哪些竞品？"><a href="#有哪些竞品？" class="headerlink" title="有哪些竞品？"></a>有哪些竞品？</h2><ul>
+<li><p><a href="https://coreos.com/rkt/" target="_blank" rel="noopener">CoreOS</a></p>
+</li>
+<li><p><a href="https://openvz.org/" target="_blank" rel="noopener">OpenVZ</a></p>
+</li>
+<li><p><a href="http://www.projectatomic.io/" target="_blank" rel="noopener">RedHat project Atom</a></p>
+</li>
+<li><p><a href="http://dockone.io/article/8631" target="_blank" rel="noopener">LXC(Linux Container)</a></p>
+<a id="more"></a>
+<h2 id="Present-situation-of-docker"><a href="#Present-situation-of-docker" class="headerlink" title="Present situation of docker"></a>Present situation of docker</h2></li>
+<li><p><a href="https://www.oschina.net/news/94685/solomon-hykes-announces-departure-from-docker" target="_blank" rel="noopener">Docker创始人已经从Docker公司离职</a></p>
+</li>
+<li><p><a href="http://dockone.io/article/2795" target="_blank" rel="noopener">Docker 宣布拥抱k8s</a></p>
+</li>
+<li><p><a href="http://dockerone.com/article/9301" target="_blank" rel="noopener">公司曾经估值10亿刀，现在却在感谢大家在公司财务面临巨大压力下仍然坚守岗位</a></p>
+</li>
+<li><p><a href="https://mp.weixin.qq.com/s?__biz=MjM5MzM3NjM4MA==&mid=2654700787&idx=5&sn=4d60122e4242a29c4657cf6c0e5765f6&scene=21" target="_blank" rel="noopener">Docker 将 Docker Enterprise 卖给​ Mirantis：随后融资 3500 万美元，迎来新CEO</a></p>
+</li>
+<li><p>以为这些就完了吗，我们来看看其它的一些数据：github搜索一下docker，<a href="https://github.com/search?q=stars%3A%3E5000+docker&type=Repositories" target="_blank" rel="noopener">仅仅star 5k以上的相关的仓库数量就达到68个</a>，<a href="https://github.com/search?q=docker&type=Repositories" target="_blank" rel="noopener">总数量更是多达432k</a>，</p>
+</li>
+</ul>
+<h2 id="Docker核心概念"><a href="#Docker核心概念" class="headerlink" title="Docker核心概念"></a>Docker核心概念</h2><p>Docker的核心就是：镜像、容器和仓库</p>
+<p>在我的理解上，一直把Docker镜像理解为我们编译后的一个APP，可以直接在特定的环境中运行，而在这个特定环境中运行起来的APP，就是上面所提到的容器，当然我们会有很多不同的APP会被创建出来，这些APP会被集中在应用分发中心供大家挑选使用，这个分发中心也就是我们这里的Docker仓库的概念了</p>
+<h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><ul>
+<li>持续集成/发布（CI/CD）：有流行的<a href="https://drone.io/" target="_blank" rel="noopener">drone</a>，<a href="https://jenkins.io/doc/book/blueocean/getting-started/#as-part-of-jenkins-in-docker" target="_blank" rel="noopener">jenkins</a>等工具</li>
+<li>应用隔离：因为Docker“轻”的这个特点，我们可以把每个应用就部署到自己单独的Docker容器中，这样一来，各个应用之间相互隔离，环境也各不影响，Nginx一个Docker容器，MySQL一个Docker容器，API服务一个容器…你看，多方便</li>
+<li>自动化打包</li>
+<li>快速部署</li>
+<li>自动化测试</li>
+</ul>
+<h2 id="牛刀小试"><a href="#牛刀小试" class="headerlink" title="牛刀小试"></a>牛刀小试</h2><h3 id="安装Docker基础环境"><a href="#安装Docker基础环境" class="headerlink" title="安装Docker基础环境"></a>安装Docker基础环境</h3><p>一般自己试着玩或者学习使用Docker-CE就足够了，顾名思义，也就是Docker的社区版，类似于宇宙最强IDE Visual Studio的社区版一样，安装方式<a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/" target="_blank" rel="noopener">Docker官方文档</a>中给的比较详细，本文也就不再班门弄斧了</p>
+<h3 id="Dockerfile的编写"><a href="#Dockerfile的编写" class="headerlink" title="Dockerfile的编写"></a>Dockerfile的编写</h3><p>下面这个示例是一个应用的示例，原始仓库在<a href="https://github.com/rnmg/apigo" target="_blank" rel="noopener">这里</a>，这里第一句就是基础镜像，可以看到我们使用的是ubuntu 18.10这个基础的操作系统，然后把当前文件夹下的apigo文件，也就是编译好的文件复制到了对应的ubuntu系统中，再之后也把配置文件也复制了进去（这里说一下，如果有两个参数的命令，第一个是本机，第二个参数是对应的镜像），接着暴露8002端口后直接运行我们的应用</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> ubuntu:<span class="number">18.10</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> ./apigo ./apigo</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> ./config/config.default.toml ./config/config.toml</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">8002</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> [<span class="string">"./apigo"</span>]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="镜像的构建"><a href="#镜像的构建" class="headerlink" title="镜像的构建"></a>镜像的构建</h3><p>构建镜像时在命令行中进到我们Dockerfile所在的文件夹下（当然也可以特别指定Dockerfile的路径），然后使用如下命令进行构建注意后面有个<code>.</code>，参数中的-t就是给我们的镜像起名字的作用，<a href="https://docs.docker.com/engine/reference/commandline/build/" target="_blank" rel="noopener">官方文档</a>中有更多关于其它编译参数的说明</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t &lt;name&gt;[:&lt;tag&gt;] .</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行镜像"><a href="#运行镜像" class="headerlink" title="运行镜像"></a>运行镜像</h3><p>我们大多数人运行的第一个docker容器都是docker hello word，在安装好Docker基础环境之后，官方文档中让我们测试是否正确安装的命令也是在教我们运行第一个Docker容器 – <code>sudo docker run hello-world</code>，除此之外，运行时还可以进行加一些其它的参数来进行，如-v是关联宿主机的fs，–rm是stop后立即删除，–name是给container起个别名，毕竟每次要操作container的时候使用输入id还是太麻烦了，这样的参数还有很多，<a href="https://docs.docker.com/engine/reference/commandline/run/" target="_blank" rel="noopener">官方文档</a>里有详细的解释说明</p>
+<h2 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h2><ul>
+<li>容器编排<ul>
+<li><a href="https://docs.docker.com/engine/swarm/" target="_blank" rel="noopener">Docker Swarm</a></li>
+<li><a href="https://kubernetes.io/" target="_blank" rel="noopener">k8s</a></li>
+</ul>
+</li>
+<li>Docker容器间通信<ul>
+<li>link</li>
+<li>connect</li>
+<li>DNS Server</li>
+<li>join</li>
+</ul>
+</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://www.kubernetes.org.cn/2250.html" target="_blank" rel="noopener">CoreOS VS Docker容器大战，之容器引擎</a></li>
+<li><a href="https://cloud.tencent.com/developer/article/1116709" target="_blank" rel="noopener">Docker系列学习文章 - 什么是容器技术？（一）</a></li>
+<li><a href="https://www.csdn.net/article/a/2016-12-13/15842604" target="_blank" rel="noopener">容器，你还只用Docker吗？</a></li>
+<li><a href="https://docs.docker.com/" target="_blank" rel="noopener">Docker 文档</a></li>
+<li><a href="https://start.jcolemorrison.com/is-docker-in-trouble/" target="_blank" rel="noopener">Is Docker in Trouble?</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/docker/" rel="tag"># docker</a>
+            
+              <a href="/tags/基础概念/" rel="tag"># 基础概念</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/09/25/other/toolsites-md/" rel="next" title="一些工具网站">
+                  <i class="fa fa-chevron-left"></i> 一些工具网站
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/12/19/summarize/2015to2019/" rel="prev" title="4 年小结(2015~2019)">
+                  4 年小结(2015~2019) <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是Docker"><span class="nav-text">什么是Docker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#有哪些竞品？"><span class="nav-text">有哪些竞品？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Present-situation-of-docker"><span class="nav-text">Present situation of docker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker核心概念"><span class="nav-text">Docker核心概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用场景"><span class="nav-text">使用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#牛刀小试"><span class="nav-text">牛刀小试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装Docker基础环境"><span class="nav-text">安装Docker基础环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dockerfile的编写"><span class="nav-text">Dockerfile的编写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#镜像的构建"><span class="nav-text">镜像的构建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行镜像"><span class="nav-text">运行镜像</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其它"><span class="nav-text">其它</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-text">参考</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Beck Qin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/Enginebeck" title="GitHub &rarr; https://github.com/Enginebeck" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:ebginebeck@gmail.com" title="E-Mail &rarr; mailto:ebginebeck@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>E-Mail</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://weibo.com/enginebeck" title="Weibo &rarr; https://weibo.com/enginebeck" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="skype:live:alioveyu?chat" title="Skype &rarr; skype:live:alioveyu?chat" rel="noopener" target="_blank"><i class="fa fa-fw fa-skype"></i>Skype</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright"><a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank">陕ICP备19008834号-4 </a>
+  <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=" rel="noopener" target="_blank"> </a>&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Beck Qin</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+  
+    <span class="post-meta-divider">|</span>
+  
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/pisces.js?v=7.4.0"></script>
+
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
